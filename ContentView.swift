@@ -256,6 +256,54 @@ struct ThirdPage: View {
 struct statPage: View {
     var body: some View {
         Text("test")
+        
+        // k means clustering with data
+        // algorithm finds clusters similar to each other in data
+        // k = # of centroids. (should adjust this based on sample size of data)
+        // centroid finds data points nearest to it and adds it to its cluster.
+        // find best possible # of k with algomatter. the centroids will be hot spots on the map (FINAL GOAL!)
+        // use "elbow technique" to find the datapoint with the best ratio of # of k to SSE
+        // perform data preprocessing by removing outliers. do not want to show one person going home for the night
+        // we want to show many people flocking to the bars, etc, not one person or outlier.
     }
 }
 
+// longitude, latitude, military time in string format
+let data = [[40.23, 50.7, "12:20"], [59.21, 427.22, "1:35"], [12.78, 100.5, "22:50"]]
+
+
+// JSON PARSING EXAMPLE
+let json = """
+{
+    "user1": {
+        "Position": {
+            "Longitude": 9.96233,
+            "Latitude": 49.80404,
+            "Time": "2023-02-24T02:32:59.45+01:00"
+        }
+    }
+}
+"""
+
+
+// JSON PARSING... user.position.longitude?
+    struct User: Decodable {
+        struct Position: Decodable {
+            let longitude: Double
+            let latitude: Double
+        let time: String
+            
+            private enum CodingKeys: String, CodingKey {
+                case longitude = "Longitude"
+                case latitude = "Latitude"
+            case time = "Time"
+            }
+        }
+        
+        let position: Position
+        
+        private enum CodingKeys: String, CodingKey {
+            case position = "Position"
+        }
+    }
+    
