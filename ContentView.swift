@@ -14,11 +14,11 @@ import Contacts
 import Foundation
 import CoreML
 
+
 struct ContentView: View {
     @State private var showText = false
     @State private var showTextHigh = false
     @State private var showTextLow = false
-    
     var body: some View {
         NavigationView {
             ZStack {
@@ -59,7 +59,7 @@ struct ContentView: View {
                                     self.showTextHigh = true
                                 }
                                 .padding(.all, 50)
-                            
+
                         }
                         NavigationLink(destination:
                                         infoPage()) {
@@ -150,10 +150,11 @@ struct shareDataPage: View {
     @StateObject var deviceLocationService = DeviceLocationService.shared
     @State var tokens: Set<AnyCancellable> = []
     @State var coordinates: (lat: Double, lon: Double) = (0,0)
+    @State var response: String = ""
     
     var body: some View {
             NavigationView {
-                VStack(spacing: 75) {
+                VStack(spacing: 40) {
                     Image("logo")
                         .resizable()
                         .frame(width:300,height:200)
@@ -194,6 +195,36 @@ struct shareDataPage: View {
                         .onAppear() {
                             self.showStreetSmarts = true
                         }
+                    Button(action: {
+                                // Create the URLRequest
+                                let url = URL(string: "http://192.168.1.19:5000/kmeans")!
+                                var request = URLRequest(url: url)
+                                request.httpMethod = "POST"
+                                // Create the CSV file data
+                                let csv = "Latitude,Longitude\n36.12,86.67\n33.94,118.40\n32.21,110.92\n37.33,121.88"
+                                let data = csv.data(using: .utf8)!
+                                // Add the data to the request
+                                request.httpBody = data
+                                request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
+                                // Send the request
+                                URLSession.shared.dataTask(with: request) { data, response, error in
+                                  if let error = error {
+                                    self.response = "Error: \(error.localizedDescription)"
+                                  } else {
+                                    self.response = "Data sent successfully!"
+                                  }
+                                }.resume()
+                              }) {
+                                Text("Populate Map")
+                                      .font(.largeTitle)
+                                      .opacity(self.showStreetSmarts ? 1 : 0)
+                                      .animation(Animation.linear(duration: 1).delay(1.75))
+                                      .onAppear() {
+                                          self.showStreetSmarts = true
+                                      }
+                                  
+                              }
+                    Text(response)
                     Text("")
                         .navigationBarTitle("", displayMode: .inline)
                         .toolbar {
