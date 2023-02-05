@@ -154,7 +154,7 @@ struct shareDataPage: View {
     
     var body: some View {
             NavigationView {
-                VStack(spacing: 40) {
+                VStack(spacing: 60) {
                     Image("logo")
                         .resizable()
                         .frame(width:300,height:200)
@@ -195,36 +195,36 @@ struct shareDataPage: View {
                         .onAppear() {
                             self.showStreetSmarts = true
                         }
-                    Button(action: {
-                                // Create the URLRequest
-                                let url = URL(string: "http://192.168.1.19:5000/kmeans")!
-                                var request = URLRequest(url: url)
-                                request.httpMethod = "POST"
-                                // Create the CSV file data
-                                let csv = "Latitude,Longitude\n36.12,86.67\n33.94,118.40\n32.21,110.92\n37.33,121.88"
-                                let data = csv.data(using: .utf8)!
-                                // Add the data to the request
-                                request.httpBody = data
-                                request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
-                                // Send the request
-                                URLSession.shared.dataTask(with: request) { data, response, error in
-                                  if let error = error {
-                                    self.response = "Error: \(error.localizedDescription)"
-                                  } else {
-                                    self.response = "Data sent successfully!"
-                                  }
-                                }.resume()
-                              }) {
-                                Text("Populate Map")
-                                      .font(.largeTitle)
-                                      .opacity(self.showStreetSmarts ? 1 : 0)
-                                      .animation(Animation.linear(duration: 1).delay(1.75))
-                                      .onAppear() {
-                                          self.showStreetSmarts = true
-                                      }
-                                  
-                              }
-                    Text(response)
+//                    Button(action: {
+//                                // Create the URLRequest
+//                                let url = URL(string: "http://192.168.1.19:5000/kmeans")!
+//                                var request = URLRequest(url: url)
+//                                request.httpMethod = "POST"
+//                                // Create the CSV file data
+//                                let csv = "Latitude,Longitude\n36.12,86.67\n33.94,118.40\n32.21,110.92\n37.33,121.88"
+//                                let data = csv.data(using: .utf8)!
+//                                // Add the data to the request
+//                                request.httpBody = data
+//                                request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
+//                                // Send the request
+//                                URLSession.shared.dataTask(with: request) { data, response, error in
+//                                  if let error = error {
+//                                    self.response = "Error: \(error.localizedDescription)"
+//                                  } else {
+//                                    self.response = "Data sent successfully!"
+//                                  }
+//                                }.resume()
+//                              }) {
+//                                Text("Populate Map")
+//                                      .font(.largeTitle)
+//                                      .opacity(self.showStreetSmarts ? 1 : 0)
+//                                      .animation(Animation.linear(duration: 1).delay(1.75))
+//                                      .onAppear() {
+//                                          self.showStreetSmarts = true
+//                                      }
+//
+//                              }
+//                    Text(response)
                     Text("")
                         .navigationBarTitle("", displayMode: .inline)
                         .toolbar {
@@ -346,13 +346,54 @@ let locations = [
     Location(name:"Test", coordinate: CLLocationCoordinate2D(latitude: 51.501, longitude: -0.141)) // currLat, currLong
 ]
 
+
+struct MyAnnotationItem: Identifiable {
+    var coordinate: CLLocationCoordinate2D
+    let id = UUID()
+}
 struct ThirdPage: View {
-    @State private var region = MKCoordinateRegion( center: CLLocationCoordinate2D(latitude: 33.9505, longitude: -83.3750), span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+    @State var coordinateRegion: MKCoordinateRegion = {
+        var newRegion = MKCoordinateRegion()
+        newRegion.center.latitude = 33.9505
+        newRegion.center.longitude = -83.3750
+        newRegion.span.latitudeDelta = 0.04
+        newRegion.span.longitudeDelta = 0.04
+        return newRegion
+    }()
+    var annotationItems: [MyAnnotationItem] = [
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.95055247, longitude: -83.37443977)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.93776312, longitude: -83.36897076)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.96057116, longitude: -83.37354267)),
+        
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 30.83220454, longitude: -83.27790089)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.78632666, longitude: -84.38372351)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 32.46772251, longitude: -84.98956001)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 32.83866952, longitude: -83.63109835)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 34.20785463, longitude: -84.14022725)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 34.9819045, longitude: -85.2872025)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 30.84629471, longitude: -83.27796394)),
+        
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.94376265, longitude: -118.40600789)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 35.21086952, longitude: -80.95100097)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 39.85697386, longitude: -104.66674243)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 47.40307195, longitude: -122.27005555)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 40.77035464, longitude: -73.8799819)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 32.89830075, longitude: -97.03897696)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.64072632, longitude: -84.42928674)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 39.17558238, longitude: -76.68915714)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 42.36253084, longitude: -71.01614285)),
+        MyAnnotationItem(coordinate: CLLocationCoordinate2D(latitude: 33.943174, longitude: -118.32737197)),
+    ]
     var body: some View {
-        Map(coordinateRegion: $region)
-            .edgesIgnoringSafeArea(.all)
+        VStack {
+            Map(coordinateRegion: $coordinateRegion,
+                annotationItems: annotationItems) {item in
+                MapPin(coordinate: item.coordinate)
+            }
+                .edgesIgnoringSafeArea(.all)
         }
     }
+}
     
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
@@ -404,18 +445,31 @@ struct statSharePage: View {
     @State private var showStats = false
     var body: some View {
         NavigationView {
-            VStack(spacing: 100) {
-                Text("Statistics (Share)")
+            VStack(spacing: 1) {
+                Text("About Us")
                     .fontWeight(.bold)
-                    .font(.system(size: 60))
+                    .font(.system(size: 80))
                     .opacity(self.showStats ? 1 : 0)
                     .animation(Animation.linear(duration: 1).delay(1.0))
                     .onAppear() {
                         self.showStats = true
                     }
-                Image("IMG_006")
+                VStack(alignment: .center) {
+                    Text("We are a group of CS and CSE students at UGA that came together to build a iOS product for UGA's 2023 Hackathon.")
+                        .frame(width:300,height:300)
+                        .fontWeight(.bold)
+                        .font(.title)
+                        .multilineTextAlignment(.center)
+                        .opacity(self.showStats ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.0))
+                        .onAppear() {
+                            self.showStats = true
+                        }
+                }
+                Image("IMG_4327")
                     .resizable()
-                    .frame(width:175,height:150)
+                    .frame(width:350,height:300)
+                    .cornerRadius(15)
                     .opacity(self.showStats ? 1 : 0)
                     .animation(Animation.linear(duration: 1).delay(1.50))
                     .onAppear() {
@@ -456,18 +510,31 @@ struct statHidePage: View {
     @State private var showStats = false
     var body: some View {
         NavigationView {
-            VStack(spacing: 100) {
-                Text("Statistics (Hide)")
+            VStack(spacing: 1) {
+                Text("About Us")
                     .fontWeight(.bold)
-                    .font(.system(size: 60))
+                    .font(.system(size: 80))
                     .opacity(self.showStats ? 1 : 0)
                     .animation(Animation.linear(duration: 1).delay(1.0))
                     .onAppear() {
                         self.showStats = true
                     }
-                Image("IMG_006")
+                VStack(alignment: .center) {
+                    Text("We are a group of CS and CSE students at UGA that came together to build a iOS product for UGA's 2023 Hackathon.")
+                        .frame(width:300,height:300)
+                        .fontWeight(.bold)
+                        .font(.title)
+                        .multilineTextAlignment(.center)
+                        .opacity(self.showStats ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.0))
+                        .onAppear() {
+                            self.showStats = true
+                        }
+                }
+                Image("IMG_4327")
                     .resizable()
-                    .frame(width:175,height:150)
+                    .frame(width:350,height:300)
+                    .cornerRadius(15)
                     .opacity(self.showStats ? 1 : 0)
                     .animation(Animation.linear(duration: 1).delay(1.50))
                     .onAppear() {
@@ -637,3 +704,4 @@ struct settingsHidePage: View {
 // use "elbow technique" to find the datapoint with the best ratio of # of k to SSE
 // perform data preprocessing by removing outliers. do not want to show one person going home for the night
 // we want to show many people flocking to the bars, etc, not one person or outlier.
+any people flocking to the bars, etc, not one person or outlier.
