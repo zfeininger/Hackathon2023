@@ -10,13 +10,14 @@ import UIKit
 import MapKit
 import CoreLocation
 import Combine
-
+import Contacts
+import Foundation
+import CoreML
 
 struct ContentView: View {
     @State private var showText = false
     @State private var showTextHigh = false
     @State private var showTextLow = false
-
     
     var body: some View {
         NavigationView {
@@ -36,7 +37,7 @@ struct ContentView: View {
                             self.showText = true
                         }
                     HStack {
-                        NavigationLink(destination: SecondPage()) {
+                        NavigationLink(destination: shareDataPage()) {
                             Rectangle()
                                 .fill(Color.green.opacity(0.75))
                                 .cornerRadius(15)
@@ -74,7 +75,7 @@ struct ContentView: View {
                     }
                     HStack {
                         NavigationLink(destination:
-                                        SecondPage()) {
+                                        hideDataPage()) {
                             Rectangle()
                                 .fill(Color.red.opacity(0.75))
                                 .cornerRadius(15)
@@ -95,12 +96,8 @@ struct ContentView: View {
                                 .onAppear() {
                                     self.showTextLow = true
                                 }
+                                .offset(CGSize(width: -20, height: 0))
                                 .padding(.all, 50)
-                        }
-                        NavigationLink(destination:
-                                        infoPage()) {
-                            Text("?")
-                                .fontWeight(.bold)
                         }
 
                         .opacity(self.showTextHigh ? 1 : 0)
@@ -148,17 +145,18 @@ struct infoPage: View {
 
 }
 
-struct SecondPage: View {
+struct shareDataPage: View {
     @State private var showStreetSmarts = false
     @StateObject var deviceLocationService = DeviceLocationService.shared
     @State var tokens: Set<AnyCancellable> = []
     @State var coordinates: (lat: Double, lon: Double) = (0,0)
+    
     var body: some View {
             NavigationView {
-                VStack(spacing: 175) {
-                    Text("Street Smarts")
-                        .fontWeight(.bold)
-                        .font(.system(size: 50))
+                VStack(spacing: 75) {
+                    Image("logo")
+                        .resizable()
+                        .frame(width:300,height:200)
                         .opacity(self.showStreetSmarts ? 1 : 0)
                         .animation(Animation.linear(duration: 1).delay(1.0))
                         .onAppear() {
@@ -171,6 +169,11 @@ struct SecondPage: View {
                             observeLocationAccessDenied()
                             deviceLocationService.requestlocationUpdates()
                         }
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.5))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
                     Text("Longitude: \(coordinates.lon)")
                         .font(.largeTitle)
                         .onAppear {
@@ -178,25 +181,38 @@ struct SecondPage: View {
                             observeLocationAccessDenied()
                             deviceLocationService.requestlocationUpdates()
                         }
-                    
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.5))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
+                    Image("IMG_004")
+                        .resizable()
+                        .frame(width:75,height:75)
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.75))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
                     Text("")
                         .navigationBarTitle("", displayMode: .inline)
                         .toolbar {
                             ToolbarItemGroup(placement:.bottomBar) {
-                                NavigationLink(destination: ThirdPage()) {
-                                    Image(systemName: "house")
-                                        .font(.system(size: 40))
+                                Button(action: {}) {
+                                Image(systemName: "house")
+                                .font(.system(size: 40))
                                 }
                                 NavigationLink(destination: ThirdPage()) {
                                     Image(systemName: "map")
                                         .font(.system(size: 40))
+                                        .frame(width:70,height:10)
                                 }
-                                NavigationLink(destination: statPage()) {
+                                NavigationLink(destination: statSharePage()) {
                                     Image(systemName: "chart.bar")
                                         .font(.system(size: 40))
-                                        .frame(width:90,height:10)
+                                        .frame(width:100,height:10)
                                 }
-                                NavigationLink(destination: ThirdPage()) {
+                                NavigationLink(destination: settingsSharePage()) {
                                     Image(systemName: "gear")
                                         .font(.system(size: 40))
                                 }
@@ -205,6 +221,7 @@ struct SecondPage: View {
                 }
         }
             .navigationBarHidden(true)
+        
     }
     func observeCoordinateUpdates() {
         deviceLocationService.coordinatesPublisher
@@ -228,6 +245,65 @@ struct SecondPage: View {
     }
 }
 
+struct hideDataPage: View {
+    @State private var showStreetSmarts = false
+    var body: some View {
+            NavigationView {
+                VStack(spacing: 100) {
+                    Image("logo")
+                        .resizable()
+                        .frame(width:300,height:200)
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.0))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
+                    Text("Location Sharing is off")
+                        .font(.largeTitle)
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.5))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
+                    Image("IMG_003")
+                        .resizable()
+                        .frame(width:175,height:100)
+                        .opacity(self.showStreetSmarts ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.75))
+                        .onAppear() {
+                            self.showStreetSmarts = true
+                        }
+                    Text("")
+                        .navigationBarTitle("", displayMode: .inline)
+                        .toolbar {
+                            ToolbarItemGroup(placement:.bottomBar) {
+                                Button(action: {}) {
+                                Image(systemName: "house")
+                                .font(.system(size: 40))
+                                }
+                                NavigationLink(destination: ThirdPage()) {
+                                    Image(systemName: "map")
+                                        .font(.system(size: 40))
+                                        .frame(width:70,height:10)
+
+                                }
+                                NavigationLink(destination: statHidePage()) {
+                                    Image(systemName: "chart.bar")
+                                        .font(.system(size: 40))
+                                        .frame(width:100,height:10)
+                                }
+                                NavigationLink(destination: settingsHidePage()) {
+                                    Image(systemName: "gear")
+                                        .font(.system(size: 40))
+                                }
+                            }
+                        }
+                }
+        }
+            .navigationBarHidden(true)
+    }
+}
+
 
 struct Location: Identifiable {
     let id = UUID()
@@ -240,7 +316,7 @@ let locations = [
 ]
 
 struct ThirdPage: View {
-    @State private var region = MKCoordinateRegion( center: CLLocationCoordinate2D(latitude: 40, longitude: 14), span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+    @State private var region = MKCoordinateRegion( center: CLLocationCoordinate2D(latitude: 33.9505, longitude: -83.3750), span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
     var body: some View {
         Map(coordinateRegion: $region)
             .edgesIgnoringSafeArea(.all)
@@ -252,21 +328,6 @@ struct ThirdPage: View {
             ContentView()
         }
     }
-
-struct statPage: View {
-    var body: some View {
-        Text("test")
-        
-        // k means clustering with data
-        // algorithm finds clusters similar to each other in data
-        // k = # of centroids. (should adjust this based on sample size of data)
-        // centroid finds data points nearest to it and adds it to its cluster.
-        // find best possible # of k with algomatter. the centroids will be hot spots on the map (FINAL GOAL!)
-        // use "elbow technique" to find the datapoint with the best ratio of # of k to SSE
-        // perform data preprocessing by removing outliers. do not want to show one person going home for the night
-        // we want to show many people flocking to the bars, etc, not one person or outlier.
-    }
-}
 
 // longitude, latitude, military time in string format
 let data = [[40.23, 50.7, "12:20"], [59.21, 427.22, "1:35"], [12.78, 100.5, "22:50"]]
@@ -306,4 +367,242 @@ let json = """
             case position = "Position"
         }
     }
-    
+
+
+struct statSharePage: View {
+    @State private var showStats = false
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 100) {
+                Text("Statistics (Share)")
+                    .fontWeight(.bold)
+                    .font(.system(size: 60))
+                    .opacity(self.showStats ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.0))
+                    .onAppear() {
+                        self.showStats = true
+                    }
+                Image("IMG_006")
+                    .resizable()
+                    .frame(width:175,height:150)
+                    .opacity(self.showStats ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.50))
+                    .onAppear() {
+                        self.showStats = true
+                    }
+                Text("")
+                    .navigationBarTitle("", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement:.bottomBar) {
+                            NavigationLink(destination: shareDataPage()) {
+                                Image(systemName: "house")
+                                    .font(.system(size: 40))
+                            }
+                            NavigationLink(destination: ThirdPage()) {
+                                Image(systemName: "map")
+                                    .font(.system(size: 40))
+                                    .frame(width:70,height:10)
+
+                            }
+                            Button(action: {}) {
+                            Image(systemName: "chart.bar")
+                            .font(.system(size: 40))
+                            .frame(width:100,height:10)
+                            }
+                            NavigationLink(destination: settingsSharePage()) {
+                                Image(systemName: "gear")
+                                    .font(.system(size: 40))
+                            }
+                        }
+                    }
+            }
+    }
+        .navigationBarHidden(true)
+    }
+}
+
+struct statHidePage: View {
+    @State private var showStats = false
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 100) {
+                Text("Statistics (Hide)")
+                    .fontWeight(.bold)
+                    .font(.system(size: 60))
+                    .opacity(self.showStats ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.0))
+                    .onAppear() {
+                        self.showStats = true
+                    }
+                Image("IMG_006")
+                    .resizable()
+                    .frame(width:175,height:150)
+                    .opacity(self.showStats ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.50))
+                    .onAppear() {
+                        self.showStats = true
+                    }
+                Text("")
+                    .navigationBarTitle("", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement:.bottomBar) {
+                            NavigationLink(destination: hideDataPage()) {
+                                Image(systemName: "house")
+                                    .font(.system(size: 40))
+                            }
+                            NavigationLink(destination: ThirdPage()) {
+                                Image(systemName: "map")
+                                    .font(.system(size: 40))
+                                    .frame(width:70,height:10)
+
+                            }
+                            Button(action: {}) {
+                            Image(systemName: "chart.bar")
+                            .font(.system(size: 40))
+                            .frame(width:100,height:10)
+                            }
+                            NavigationLink(destination: settingsHidePage()) {
+                                Image(systemName: "gear")
+                                    .font(.system(size: 40))
+                            }
+                        }
+                    }
+            }
+    }
+        .navigationBarHidden(true)
+    }
+}
+
+struct settingsSharePage: View {
+    @State private var showSettings = false
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 100) {
+                Text("Settings")
+                    .fontWeight(.bold)
+                    .font(.system(size: 60))
+                    .opacity(self.showSettings ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.0))
+                    .onAppear() {
+                        self.showSettings = true
+                    }
+                Image("IMG_005")
+                    .resizable()
+                    .frame(width:100,height:100)
+                    .opacity(self.showSettings ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.50))
+                    .onAppear() {
+                        self.showSettings = true
+                    }
+                NavigationLink(destination: hideDataPage()) {
+                    Text("Disable Location Sharing")
+                        .fontWeight(.bold)
+                        .font(.title)
+                        .opacity(self.showSettings ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.75))
+                        .onAppear() {
+                            self.showSettings = true
+                        }
+                }
+                Text("")
+                    .navigationBarTitle("", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement:.bottomBar) {
+                            NavigationLink(destination: shareDataPage()) {
+                                Image(systemName: "house")
+                                    .font(.system(size: 40))
+                            }
+                            NavigationLink(destination: ThirdPage()) {
+                                Image(systemName: "map")
+                                    .font(.system(size: 40))
+                                    .frame(width:70,height:10)
+
+                            }
+                            NavigationLink(destination: statSharePage()) {
+                                Image(systemName: "chart.bar")
+                                    .font(.system(size: 40))
+                                    .frame(width:100,height:10)
+                            }
+                            Button(action: {}) {
+                            Image(systemName: "gear")
+                            .font(.system(size: 40))
+                            }
+                        }
+                    }
+            }
+    }
+        .navigationBarHidden(true)
+    }
+}
+
+struct settingsHidePage: View {
+    @State private var showSettings = false
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 100) {
+                Text("Settings")
+                    .fontWeight(.bold)
+                    .font(.system(size: 60))
+                    .opacity(self.showSettings ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.0))
+                    .onAppear() {
+                        self.showSettings = true
+                    }
+                Image("IMG_005")
+                    .resizable()
+                    .frame(width:100,height:100)
+                    .opacity(self.showSettings ? 1 : 0)
+                    .animation(Animation.linear(duration: 1).delay(1.50))
+                    .onAppear() {
+                        self.showSettings = true
+                    }
+                NavigationLink(destination: shareDataPage()) {
+                    Text("Enable Location Sharing")
+                        .fontWeight(.bold)
+                        .font(.title)
+                        .opacity(self.showSettings ? 1 : 0)
+                        .animation(Animation.linear(duration: 1).delay(1.75))
+                        .onAppear() {
+                            self.showSettings = true
+                        }
+                }
+                Text("")
+                    .navigationBarTitle("", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement:.bottomBar) {
+                            NavigationLink(destination: hideDataPage()) {
+                                Image(systemName: "house")
+                                    .font(.system(size: 40))
+                            }
+                            NavigationLink(destination: ThirdPage()) {
+                                Image(systemName: "map")
+                                    .font(.system(size: 40))
+                                    .frame(width:70,height:10)
+
+                            }
+                            NavigationLink(destination: statHidePage()) {
+                                Image(systemName: "chart.bar")
+                                    .font(.system(size: 40))
+                                    .frame(width:100,height:10)
+                            }
+                            Button(action: {}) {
+                            Image(systemName: "gear")
+                            .font(.system(size: 40))
+                            }
+                        }
+                    }
+            }
+    }
+        .navigationBarHidden(true)
+    }
+}
+
+
+// k means clustering with data
+// algorithm finds clusters similar to each other in data
+// k = # of centroids. (should adjust this based on sample size of data)
+// centroid finds data points nearest to it and adds it to its cluster.
+// find best possible # of k with algomatter. the centroids will be hot spots on the map (FINAL GOAL!)
+// use "elbow technique" to find the datapoint with the best ratio of # of k to SSE
+// perform data preprocessing by removing outliers. do not want to show one person going home for the night
+// we want to show many people flocking to the bars, etc, not one person or outlier.
