@@ -704,4 +704,4 @@ struct settingsHidePage: View {
 // use "elbow technique" to find the datapoint with the best ratio of # of k to SSE
 // perform data preprocessing by removing outliers. do not want to show one person going home for the night
 // we want to show many people flocking to the bars, etc, not one person or outlier.
-any people flocking to the bars, etc, not one person or outlier.
+
